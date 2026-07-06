@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  TRAINER
+  STUDENT
+  ADMIN
+}
+
+model User {
+  id        String   @id @default(uuid())
+  phone     String?  @unique
+  email     String?  @unique
+  role      Role?
+  createdAt DateTime @default(now())
+
+  trainer Trainer?
+  student Student?
+}
+
+model Trainer {
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  user             User     @relation(fields: [userId], references: [id])
+  name             String
+  phone            String
+  email            String
+  level            String
+  registrationDate String
+
+  students Student[]
+}
+
+model Student {
+  id        String  @id @default(uuid())
+  userId    String? @unique
+  user      User?   @relation(fields: [userId], references: [id])
+  name            String
+  email           String
+  phone           String?
+  level           String
+  trainerId       String
+  trainer         Trainer @relation(fields: [trainerId], references: [id])
+  pendingWorkshop String?
+
+  workshopHistory WorkshopRecord[]
+}
+
+model WorkshopRecord {
+  id                String  @id @default(uuid())
+  studentId         String
+  student           Student @relation(fields: [studentId], references: [id])
+  workshopName      String
+  completionDate    String
+  certificateNumber String  @unique
+  trainerName       String
+}
+
+model Admin {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+model WorkshopOption {
+  name String @id
+}
+
+model LevelOption {
+  name String @id
+}

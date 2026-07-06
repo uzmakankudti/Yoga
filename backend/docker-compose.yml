@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ypv
+      POSTGRES_PASSWORD: ypv
+      POSTGRES_DB: ypv
+    ports:
+      - "5433:5432"
+    volumes:
+      - ypv_pgdata:/var/lib/postgresql/data
+
+volumes:
+  ypv_pgdata:
